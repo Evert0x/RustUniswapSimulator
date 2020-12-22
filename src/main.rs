@@ -15,11 +15,13 @@ struct UniswapPool {
 impl UniswapPool {
 
     fn new(token1: Token, token2: Token, token1_amount: u32, token2_amount: u32) -> Self {
+        let token1_amount =  u128::from(token1_amount) * 1000000;
+        let token2_amount = u128::from(token2_amount) * 1000000;
         UniswapPool {
             token1,
             token2,
-            token1_amount: u128::from(token1_amount),
-            token2_amount: u128::from(token2_amount),
+            token1_amount,
+            token2_amount,
             k: u128::from(token1_amount) * u128::from(token2_amount)
 
         }
@@ -49,10 +51,11 @@ fn getLine() -> String {
 
 fn main() {
     // Statements here are executed when the compiled binary is called
-    let token1 = Token{name: String::from("FLUX"), symbol: String::from("FLX"), decimals: 0};
+    let token1 = Token{name: String::from("FLUX"), symbol: String::from("FLX"), decimals: 6};
     let token1_amount = 100000;
-    let token2 = Token{name: String::from("WRAPPED ETH"), symbol: String::from("WETH"), decimals: 0};
+    let token2 = Token{name: String::from("WRAPPED ETH"), symbol: String::from("WETH"), decimals: 6};
     let token2_amount = 100000;
+    const USER_DECIMALS:u128 = 1000000;
      // Print text to the console
      println!("TOKEN 1
      \tname:{}
@@ -68,28 +71,36 @@ fn main() {
 
 
     loop {
-        println!("POOL STATE
+        println!("\tPOOL STATE
 \t{}:{}
 \t{}:{}\n", pool.token1.symbol, pool.token1_amount, pool.token2.symbol, pool.token2_amount);
         loop {
-            println!("swap 10000 {} for {}? (y/n)", pool.token1.symbol, pool.token2.symbol);
+            println!("swap {} for {}? ({{amount}}/n)", pool.token1.symbol, pool.token2.symbol);
             let line = getLine();
-            if line == "y" {
-                let tokens = pool.exactInputToken1ToOutput(10000);
-                println!("Received {} {}", tokens, pool.token2.symbol)
+            match line.parse::<u128>() {
+                Ok(n) => {
+                    let tokens = pool.exactInputToken1ToOutput(n * USER_DECIMALS);
+                    println!("Received {} {}", tokens / USER_DECIMALS, pool.token2.symbol);
+                    break;
+                },
+                Err(e) => {
+                    if line == "n" { break; }
+                }
             }
-            if line == "y" || line == "n" { break; }
         }
         loop {
-            println!("swap 10000 {} for {}? (y/n)", pool.token2.symbol, pool.token1.symbol);
+            println!("swap {} for {}? ({{amount}}/n)", pool.token2.symbol, pool.token1.symbol);
             let line = getLine();
-            if line == "y" {
-                let tokens = pool.exactInputToken2ToOutput(10000);
-                println!("Received {} {}", tokens, pool.token1.symbol)
+            match line.parse::<u128>() {
+                Ok(n) => {
+                    let tokens = pool.exactInputToken2ToOutput(n * USER_DECIMALS);
+                    println!("Received {} {}", tokens / USER_DECIMALS, pool.token1.symbol);
+                    break;
+                },
+                Err(e) => {
+                    if line == "n" { break; }
+                }
             }
-            if line == "y" || line == "n" { break; }
         }
     }
-    // let mut line = String::new();
-    // let b1 =std::io::stdin().read_line(&mut line).unwrap();
 }
