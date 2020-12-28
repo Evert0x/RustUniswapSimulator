@@ -13,7 +13,6 @@ struct UniswapPool {
 }
 
 impl UniswapPool {
-
     fn new(token1: Token, token2: Token, token1_amount: u128, token2_amount: u128) -> Self {
         let token1_amount =  token1_amount * 1000000;
         let token2_amount = token2_amount * 1000000;
@@ -23,9 +22,9 @@ impl UniswapPool {
             token1_amount,
             token2_amount,
             k: u128::from(token1_amount) * u128::from(token2_amount)
-
         }
     }
+
     fn exactInputToken1ToOutput(&mut self, Input: u128) -> u128 {
         self.token1_amount += Input;
 
@@ -33,6 +32,7 @@ impl UniswapPool {
         self.token2_amount = self.k / self.token1_amount;
         return original - self.token2_amount;
     }
+
     fn exactInputToken2ToOutput(&mut self, Input: u128) -> u128 {
         self.token2_amount += Input;
 
