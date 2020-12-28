@@ -14,9 +14,9 @@ struct UniswapPool {
 
 impl UniswapPool {
 
-    fn new(token1: Token, token2: Token, token1_amount: u32, token2_amount: u32) -> Self {
-        let token1_amount =  u128::from(token1_amount) * 1000000;
-        let token2_amount = u128::from(token2_amount) * 1000000;
+    fn new(token1: Token, token2: Token, token1_amount: u128, token2_amount: u128) -> Self {
+        let token1_amount =  token1_amount * 1000000;
+        let token2_amount = token2_amount * 1000000;
         UniswapPool {
             token1,
             token2,
